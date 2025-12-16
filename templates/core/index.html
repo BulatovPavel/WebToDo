@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center text-center mt-5">
+    <div class="col-md-8">
+        <h1 class="display-4">Добро пожаловать в ToDo!</h1>
+        <p class="lead">Самый простой способ организовать свои дела.</p>
+        <hr class="my-4">
+        
+        {% if user.is_authenticated %}
+            
+            <h3 class="mb-3">
+                Активных задач: 
+                <span class="badge bg-primary">{{ tasks_count }}</span>
+            </h3>
+
+            {% if tasks_count > 0 %}
+                <p>Пора за работу!</p>
+                <a href="{% url 'tasks' %}" class="btn btn-success btn-lg">Перейти к списку</a>
+            {% else %}
+                <p class="text-success">Все чисто! Вы молодец. 🎉</p>
+                <a href="{% url 'add_task' %}" class="btn btn-primary btn-lg">Создать новую</a>
+            {% endif %}
+
+        {% else %}
+            <!-- То, что видит гость -->
+            <p>Войдите, чтобы начать планирование.</p>
+            <a href="{% url 'login' %}" class="btn btn-primary btn-lg">Войти</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

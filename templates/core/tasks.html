@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Мои задачи{% endblock %}
+
+{% block content %}
+<h2>Список задач</h2>
+<hr>
+
+<div class="list-group">
+    
+    <!-- ОТКРЫВАЕМ ЦИКЛ: Бежим по каждой задаче из списка -->
+    {% for task in tasks %}
+    
+        <!-- 1. Меняем тег <a> на <div>. Убираем href у контейнера -->
+        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+            
+            <div class="d-flex align-items-center">
+                <!-- 2. Ссылка-Чекбокс -->
+                <!-- Она теперь самостоятельная и работает! -->
+                <a href="{% url 'complete_task' task.id %}" class="text-decoration-none me-3">
+                    {% if task.is_completed %}
+                        <!-- Если сделано: Зеленая галочка -->
+                        <span class="h4 text-success mb-0">☑</span>
+                    {% else %}
+                        <!-- Если не сделано: Пустой квадрат -->
+                        <span class="h4 text-secondary mb-0">☐</span>
+                    {% endif %}
+                </a>
+                
+                <!-- Заголовок задачи -->
+                            <!-- Блок с информацией о задаче -->
+            <div>
+                <!-- Заголовок -->
+                <div class="fw-bold {% if task.is_completed %}text-decoration-line-through text-muted{% endif %}">
+                    {{ task.title }}
+                </div>
+
+                <!-- Вторая строка: Категория и Дата -->
+                <div class="d-flex align-items-center mt-1">
+                    
+                    <!-- Категория (если есть) -->
+                    {% if task.category %}
+                        <span class="badge bg-light text-dark border me-2">
+                            📂 {{ task.category.name }}
+                        </span>
+                    {% endif %}
+
+                    <!-- ДАТА ДЕДЛАЙНА (если есть) -->
+                    {% if task.due_date %}
+                        <small class="text-muted d-flex align-items-center">
+                            🗓 {{ task.due_date|date:"d E" }} <!-- Пример: 16 Декабря -->
+                        </small>
+                    {% endif %}
+                    
+                </div>
+            </div>
+            </div>
+
+            <!-- Правая часть: Приоритет -->
+            <span class="badge rounded-pill 
+                {% if task.priority == 'H' %}bg-danger
+                {% elif task.priority == 'M' %}bg-warning text-dark
+                {% else %}bg-success{% endif %}">
+                {{ task.get_priority_display }}
+            </span>
+            
+        </div>
+
+    {% empty %}
+        <div class="text-center py-5 text-muted">
+            <h4>Список пуст 🏝️</h4>
+            <p>Создайте новую задачу.</p>
+        </div>
+    {% endfor %}
+    <!-- ЗАКРЫВАЕМ ЦИКЛ -->
+
+</div>
+
+<!-- Кнопка добавления -->
+<a href="{% url 'add_task' %}" class="btn btn-primary mt-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; font-size: 24px;">+</a>
+
+{% endblock %}

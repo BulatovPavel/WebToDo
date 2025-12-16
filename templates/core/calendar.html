@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Календарь на неделю{% endblock %}
+
+{% block content %}
+<h2 class="mb-4 text-center">📅 Планы на неделю</h2>
+
+<div class="table-responsive">
+    <table class="table table-bordered" style="table-layout: fixed;">
+        <!-- ШАПКА ТАБЛИЦЫ (ДАТЫ) -->
+        <thead class="table-dark text-center">
+            <tr>
+                {% for day in week_days %}
+                    <th class="{% if day.is_today %}bg-primary{% endif %}">
+                        <!-- date:"D" выведет Пн, Вт (если язык русский) или Mon, Tue -->
+                        <!-- date:"d.m" выведет 16.12 -->
+                        <div style="font-size: 1.2rem;">{{ day.date|date:"d.m" }}</div>
+                        <small class="text-white-50">{{ day.date|date:"l" }}</small>
+                    </th>
+                {% endfor %}
+            </tr>
+        </thead>
+        
+        <!-- ТЕЛО ТАБЛИЦЫ (ЗАДАЧИ) -->
+        <tbody>
+            <tr>
+                {% for day in week_days %}
+                    <!-- Ячейка одного дня -->
+                    <td class="p-1 align-top {% if day.is_today %}bg-light{% endif %}" style="height: 300px;">
+                        
+                        <!-- Перебираем задачи внутри дня -->
+                        {% for task in day.tasks %}
+                            <div class="card mb-2 shadow-sm border-0">
+                                <div class="card-body p-2">
+                                    
+                                    <!-- Статус (галочка) -->
+                                    <div class="d-flex justify-content-between">
+                                        {% if task.is_completed %}
+                                            <span class="text-success">✅</span>
+                                        {% else %}
+                                            <span class="text-danger">🔥</span>
+                                        {% endif %}
+                                        
+                                        <!-- Приоритет кружочком -->
+                                        <span class="badge rounded-circle p-1 
+                                            {% if task.priority == 'H' %}bg-danger
+                                            {% elif task.priority == 'M' %}bg-warning
+                                            {% else %}bg-success{% endif %}" 
+                                            style="width: 10px; height: 10px;"> 
+                                        </span>
+                                    </div>
+                                    
+                                    <!-- Название (ссылка на задачу, если захочешь) -->
+                                    <p class="card-text mt-1 small fw-bold mb-0">
+                                        {{ task.title }}
+                                    </p>
+                                    
+                                    {% if task.category %}
+                                        <small class="text-muted" style="font-size: 0.7rem;">
+                                            {{ task.category.name }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% empty %}
+                            <!-- Если задач нет, ячейка пустая -->
+                        {% endfor %}
+                        
+                    </td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="text-center mt-3">
+    <a href="{% url 'add_task' %}" class="btn btn-outline-primary">Добавить задачу на дату</a>
+</div>
+{% endblock %}

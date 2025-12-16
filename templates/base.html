@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Web ToDo{% endblock %}</title>
+    <!-- Подключаем Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .card { box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    </style>
+  </head>
+  <body>
+
+    <!-- Навигация (Меню) -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+      <div class="container">
+        <a class="navbar-brand" href="/">Web ToDo</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarText">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <!-- Ссылка на Задачи -->
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'tasks' %}">Задачи</a>
+            </li>
+            <!-- Ссылка на Календарь -->
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'calendar' %}">Календарь</a>
+            </li>
+             <!-- Ссылка на Контакты -->
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'contacts' %}">Контакты</a>
+            </li>
+          </ul>
+
+          <div class="d-flex">
+            {% if user.is_authenticated %}
+                <!-- Ссылка на Профиль (по клику на email) -->
+                <a href="{% url 'profile' %}" class="navbar-text me-3 text-decoration-none text-light">
+                    User: {{ user.username }}
+                </a>
+                
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-light btn-sm">Выход</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-primary btn-sm">Войти</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Сюда будет вставляться контент конкретных страниц -->
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- Подключаем Bootstrap JS (для менюшек и модалок) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

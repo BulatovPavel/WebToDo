@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Контакты{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <h2>Свяжитесь с нами</h2>
+        <p>Если у вас есть идеи по улучшению ToDo, пишите!</p>
+        <ul class="list-unstyled">
+            <li>📧 <strong>Email:</strong> admin@webtodo.com</li>
+            <li>📱 <strong>Telegram:</strong> @webtodo_support</li>
+        </ul>
+    </div>
+    <div class="col-md-6">
+        <form>
+            <div class="mb-3">
+                <label class="form-label">Ваше сообщение</label>
+                <textarea class="form-control" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-success">Отправить</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
