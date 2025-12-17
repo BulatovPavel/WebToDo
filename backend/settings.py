@@ -78,28 +78,13 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+
 DATABASES = {
-    'default': dj_database_url.config(
-        # Это сработает на Render (он сам подставит свою базу)
-        default='postgresql://todo_user:supersecretpassword@127.0.0.1:5433/todo_db',
-        conn_max_age=600
-    )
-}
-
-# Если dj_database_url ничего не нашел (мы дома), он вернет то, что в default.
-# Но так как у тебя локально Docker на порту 5433, лучше перестраховаться:
-
-if not os.environ.get('RENDER'):
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'todo_db',
-            'USER': 'todo_user',
-            'PASSWORD': 'supersecretpassword',
-            'HOST': '127.0.0.1',
-            'PORT': '5433',
-        }
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
+}
 
 AUTH_USER_MODEL = 'core.User'
 
