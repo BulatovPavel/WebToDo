@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-8+5in(h7s9_hf(&^a7iw-3_in)d!qv#6+@qm92fzj&mga1-s9c"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = 'RENDER' not in os.environ
 
 ALLOWED_HOSTS = ['*']
 
@@ -44,6 +46,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -76,15 +79,27 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'todo_db',
-        'USER': 'todo_user',
-        'PASSWORD': 'supersecretpassword',
-        'HOST': 'localhost', 
-        'PORT': '5433',
-    }
+    'default': dj_database_url.config(
+        # Это сработает на Render (он сам подставит свою базу)
+        default='postgresql://todo_user:supersecretpassword@127.0.0.1:5433/todo_db',
+        conn_max_age=600
+    )
 }
+
+# Если dj_database_url ничего не нашел (мы дома), он вернет то, что в default.
+# Но так как у тебя локально Docker на порту 5433, лучше перестраховаться:
+
+if not os.environ.get('RENDER'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'todo_db',
+            'USER': 'todo_user',
+            'PASSWORD': 'supersecretpassword',
+            'HOST': '127.0.0.1',
+            'PORT': '5433',
+        }
+    }
 
 AUTH_USER_MODEL = 'core.User'
 
@@ -124,7 +139,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = '/static/'
+if not DEBUG:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
