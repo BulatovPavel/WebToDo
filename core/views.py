@@ -4,7 +4,14 @@ from .forms import TaskForm
 from tasks.models import *
 from datetime import date, timedelta
 from django.contrib.auth import login
-from .forms import TaskForm, RegisterForm 
+from .forms import TaskForm, RegisterForm
+import requests 
+from django.conf import settings
+from dotenv import load_dotenv  
+import os
+from pathlib import Path
+
+load_dotenv()
 
 def home(request):
     tasks_count = 0
@@ -90,3 +97,21 @@ def register(request):
         form = RegisterForm()
     
     return render(request, 'registration/register.html', {'form': form})
+
+def contacts(request):
+    if request.method == 'POST':
+        message = request.POST.get('message')
+        
+        # Данные для Телеграма
+        bot_token = os.getenv("TELEGRAM_TOKEN")  
+        chat_id = os.getenv("TELEGRAM_CHAT_ID")
+        
+        text = f"📩 Новое сообщение с сайта!\n\nТекст: {message}"
+        
+        # Отправляем запрос
+        url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+        requests.post(url, data={'chat_id': chat_id, 'text': text})
+        
+        return render(request, 'core/contacts.html', {'success': True})
+        
+    return render(request, 'core/contacts.html')

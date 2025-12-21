@@ -13,12 +13,14 @@
         </ul>
     </div>
     <div class="col-md-6">
-        <form>
-            <div class="mb-3">
-                <label class="form-label">Ваше сообщение</label>
-                <textarea class="form-control" rows="3"></textarea>
-            </div>
-            <button type="submit" class="btn btn-success">Отправить</button>
+        {% if success %}
+        <div class="alert alert-success">Сообщение отправлено админу в Телеграм!</div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <textarea name="message" class="form-control"></textarea>
+            <button type="submit">Отправить</button>
         </form>
     </div>
 </div>
